@@ -1,0 +1,43 @@
+---
+
+haproxy_package_name: "haproxy"
+haproxy_version: ''
+haproxy_service_name: "{{ haproxy_package_name }}"
+haproxy_config_file_path: "/etc/haproxy/haproxy.cfg"
+haproxy_start_service: False
+
+haproxy_socket: /var/lib/haproxy/stats
+haproxy_chroot: /var/lib/haproxy
+haproxy_user: haproxy
+haproxy_group: haproxy
+
+haproxy_frontend_name: 'hafrontend'
+haproxy_frontend_bind_address: '*'
+haproxy_frontend_port: 5000
+haproxy_frontend_mode: 'http'
+haproxy_frontend_special_options: []
+  # - "acl api_path path_beg /api"
+  # - "use_backend {{ haproxy_backend_name }} if api_path"
+
+haproxy_backend_name: 'habackend'
+haproxy_backend_mode: 'http'
+haproxy_backend_balance_method: 'roundrobin'
+haproxy_backend_special_options: []
+  # - "reqrep ^([^\ ]*\ /)api[/]?(.*)     \1\2"
+
+haproxy_backend_servers: []
+  # - name: app1
+  #   address: 192.168.0.1:80
+  # - name: app2
+  #   address: 192.168.0.2:80
+
+haproxy_global_vars: []
+
+haproxy_ports_firewalld_open: []
+  # - port: 8888
+  #   protocol: "tcp"
+
+haproxy_stats_username: ""
+haproxy_stats_password: ""
+haproxy_stats_bind_address: "127.0.0.1"
+haproxy_stats_port: 5000

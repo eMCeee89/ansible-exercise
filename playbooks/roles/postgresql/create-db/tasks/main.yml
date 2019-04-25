@@ -1,0 +1,46 @@
+---
+
+- name: check required parameters
+  assert:
+    that:
+      - postgresql_database_name is defined
+
+- name: create admin user
+  postgresql_user:
+    name: "{{ postgresql_database_admin_user }}"
+    password: "{{ postgresql_database_admin_pass }}"
+    encrypted: True
+  become: true
+  become_user: "{{ postgresql_user_name }}"
+
+- name: create database
+  postgresql_db:
+    name: "{{ postgresql_database_name }}"
+    encoding: "UTF8"
+    state: present
+    owner: "{{ postgresql_restoredb_db_owner }}"
+  become: true
+  become_user: "{{ postgresql_user_name }}"
+
+- name: create optional application user "{{ postgresql_database_application_user }}"
+  postgresql_user:
+    db: "{{ postgresql_database_name }}"
+    name: "{{ postgresql_database_application_user }}"
+    password: "{{ postgresql_database_application_password }}"
+    encrypted: True
+  become: true
+  become_user: "{{ postgresql_user_name }}"
+  when: postgresql_database_application_user is defined
+
+- name: change owner of "public" schema
+  command: "psql {{ postgresql_database_name }} -c 'ALTER SCHEMA public OWNER TO {{ postgresql_restoredb_db_owner }};'"
+  become: true
+  become_user: "{{ postgresql_user_name }}"
+  changed_when: false
+
+- name: grant schema priviliges to optional application user
+  command: "psql {{ postgresql_database_name }} -c '{{ item }}'"
+  become: true
+  become_user: "{{ postgresql_user_name }}"
+  when: postgresql_database_application_user is defined
+  with_items: "{{ postgresql_database_application_user_schema_privileges }}"

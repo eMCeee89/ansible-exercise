@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=%i microservice service unit
+Wants=network-online.target
+After=network.target
+
+[Service]
+User={{ microservice_os_user }}
+Group={{ microservice_os_group }}
+
+Restart=on-failure
+ProtectSystem=full
+NoNewPrivileges=true
+
+WorkingDirectory=/srv/%i
+ExecStart=/usr/bin/python3 {{ microservice_app_root_folder }}/%i/{{ microservice_bin_req_filenames['bin']['name'] }}
+
+StandardOutput=journal
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[db-servers]
+direct-exam ansible_host=10.11.12.13
+
+[microservice-servers]
+direct-exam ansible_host=10.11.12.13
+
+[haproxy-servers]
+direct-exam ansible_host=10.11.12.13
+
+[nginx-servers]
+direct-exam ansible_host=10.11.12.13

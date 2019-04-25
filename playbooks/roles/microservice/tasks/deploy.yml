@@ -1,0 +1,70 @@
+---
+
+- name: include microservice's variables
+  include_vars:
+    name: "microservice_instance"
+    file: "{{ _microservice_instance_name }}.yml"
+
+- name: create database for microservice
+  include_role:
+    name: "postgresql/create-db"
+  vars:
+    postgresql_database_name: "{{ microservice_instance['microservice_app_db_name'] }}"
+    postgresql_database_application_user: "{{ microservice_instance['microservice_app_db_user'] }}"
+    postgresql_database_application_password: "{{ microservice_instance['microservice_app_db_password'] }}"
+  when: microservice_instance['microservice_app_db_create']
+
+- name: create microservice's folder
+  file:
+    path: "{{ microservice_app_root_folder }}/{{ microservice_instance['microservice_app_name'] }}/instance"
+    state: directory
+    owner: "{{ microservice_os_user }}"
+    group: "{{ microservice_os_group }}"
+    mode: 0750
+
+- name: place microservice's executables and requirements file
+  copy:
+    src: "../files/microservices/{{ microservice_instance['microservice_app_src'] }}/{{ item.value.name }}"
+    dest: "{{ microservice_app_root_folder }}/{{ microservice_instance['microservice_app_name'] }}"
+    owner: "{{ microservice_os_user }}"
+    group: "{{ microservice_os_group }}"
+  with_dict: "{{ microservice_bin_req_filenames }}"
+
+- name: install python requirements using pip
+  pip:
+    requirements: "{{ microservice_app_root_folder }}/{{ microservice_instance['microservice_app_name'] }}/{{ microservice_bin_req_filenames.requirements.name }}"
+    executable: "pip3"
+
+- name: deploy configuration file for microservice
+  template:
+    src: "config.py.j2"
+    dest: "{{ microservice_app_root_folder }}/{{ microservice_instance['microservice_app_name'] }}/instance/config.py"
+    owner: "{{ microservice_os_user }}"
+    group: "{{ microservice_os_group }}"
+
+- name: enable microservice with systemd
+  systemd:
+    name: "microservice@{{ microservice_instance['microservice_app_name'] }}.service"
+    enabled: yes
+    daemon_reload: yes
+  when: microservice_instance['microservice_enable_service']
+
+- name: start microservice with systemd
+  systemd:
+    name: "microservice@{{ microservice_instance['microservice_app_name'] }}.service"
+    state: started
+
+- name: selinux - allow microservice to listen on custom port
+  seport:
+    ports: "{{ microservice_instance['microservice_app_port'] }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+
+- name: allow microservice's port on firewalld
+  firewalld:
+    port: "{{ microservice_instance['microservice_app_port'] }}/{{ microservice_instance['microservice_app_protocol'] }}"
+    state: enabled
+    permanent: True
+    immediate: True
+  when: microservice_instance['microservice_app_port_firewalld_open']

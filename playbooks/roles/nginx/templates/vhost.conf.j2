@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+
+server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+    proxy_http_version 1.1;
+
+    error_log /var/log/nginx/{{ item.key }}-error.log;
+    access_log /var/log/nginx/{{ item.key }}-access.log combined;
+
+{% for vhost_item, vhost_pxy_pass in item.value|dictsort %}
+    location {{ vhost_item }} {
+        proxy_pass http://{{ vhost_pxy_pass.proxy_pass }};
+    }
+{% endfor %}
+}

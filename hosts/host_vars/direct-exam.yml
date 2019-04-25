@@ -1,0 +1,32 @@
+---
+
+postgresql_devel: True
+postgresql_firewalld_services_enabled: []
+
+microservice_instances:
+  - "direct_restapi_no1"
+  - "direct_restapi_no2"
+
+haproxy_frontend_bind_address: "127.0.0.1"
+haproxy_frontend_port: 8088
+haproxy_frontend_special_options:
+  - "acl api_path path_beg /api"
+  - "use_backend {{ haproxy_backend_name }} if api_path"
+
+haproxy_backend_special_options:
+  - "reqrep ^([^\\ ]*\\ /)api[/]?(.*)     \\1\\2"
+  - "option forwardfor"
+  - "option httpchk HEAD /health HTTP/1.1\\r\\nHost:localhost"
+haproxy_backend_servers:
+  - name: direct_restapi_no1
+    address: 127.0.0.1:5001
+  - name: direct_restapi_no2
+    address: 127.0.0.1:5002
+haproxy_ports_firewalld_open: []
+
+nginx_vhosts:
+  direct_api_pxy:
+    /:
+      proxy_pass: "127.0.0.1:8088/"
+    /stats/:
+      proxy_pass: "127.0.0.1:5000/"

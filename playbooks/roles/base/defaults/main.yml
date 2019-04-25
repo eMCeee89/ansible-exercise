@@ -1,0 +1,12 @@
+---
+
+base_packages:
+  - "epel-release"
+  - "policycoreutils-python"
+
+base_services:
+  firewalld:
+    enabled: "yes"
+    state: "started"
+
+base_firewalld_services_enabled: []

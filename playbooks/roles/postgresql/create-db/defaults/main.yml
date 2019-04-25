@@ -1,0 +1,20 @@
+---
+
+postgresql_user_name: postgres
+postgresql_database_admin_user: "director"
+postgresql_database_admin_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38363662623132613964393635656239363236346466323865666330323361336566663530646462
+          3531346266616463666633396431336362306464646161640a616239616535363463343338653234
+          61386630326532616666313537323465616230323432636334396365376439656138643431656662
+          3430393733326438350a353431643932623164393762306536623962326533356134643462316238
+          3030
+postgresql_restoredb_db_owner: "{{ postgresql_database_admin_user }}"
+postgresql_database_application_user: ""
+postgresql_database_application_password: "use-vault"
+postgresql_database_application_user_schema_privileges:
+  - ALTER DEFAULT PRIVILEGES FOR USER "{{ postgresql_database_admin_user }}" IN SCHEMA public GRANT SELECT, INSERT, UPDATE on TABLES TO "{{ postgresql_database_application_user }}";
+  - ALTER DEFAULT PRIVILEGES FOR USER "{{ postgresql_database_admin_user }}" IN SCHEMA public GRANT USAGE ON SEQUENCES to "{{ postgresql_database_application_user }}";
+  - GRANT USAGE ON SCHEMA public TO "{{ postgresql_database_application_user }}";
+  - GRANT USAGE ON LANGUAGE plpgsql TO "{{ postgresql_database_application_user }}";
+  - REVOKE CREATE ON SCHEMA public FROM PUBLIC;

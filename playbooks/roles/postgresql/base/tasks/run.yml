@@ -1,0 +1,22 @@
+---
+
+- name: enable postgresql service
+  service:
+    name: "{{ postgresql_service_name }}"
+    enabled: yes
+
+- name: start postgresql service
+  service:
+    name: "{{ postgresql_service_name }}"
+    state: started
+  when: postgresql_start_service
+
+- name: allow required services on firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: True
+    immediate: True
+  when: postgresql_firewalld_services_enabled
+  with_items:
+    - "{{ postgresql_firewalld_services_enabled }}"

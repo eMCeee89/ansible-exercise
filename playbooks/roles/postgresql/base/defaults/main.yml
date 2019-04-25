@@ -1,0 +1,62 @@
+---
+
+postgresql_package_name: "postgresql"
+postgresql_version: 10
+postgresql_start_service: False
+postgresql_service_name: "{{ postgresql_package_name }}-{{ postgresql_version }}"
+
+postgresql_packages:
+  - "{{ postgresql_package_name }}{{ postgresql_version }}"
+  - "{{ postgresql_package_name }}{{ postgresql_version }}-server"
+  - "{{ postgresql_package_name }}{{ postgresql_version }}-contrib"
+  - "python-psycopg2"
+
+postgresql_devel: False
+postgresql_devel_packages:
+  - "{{ postgresql_package_name }}{{ postgresql_version }}-devel"
+
+postgresql_user_name: "postgres"
+postgresql_user_group: "postgres"
+postgresql_user_homedir: '/var/lib/pgsql'
+
+postgresql_install_dir: "/usr/pgsql-{{ postgresql_version }}"
+postgresql_bin_dir: "{{ postgresql_install_dir }}/bin"
+pg_data_dir: "{{ postgresql_user_homedir }}/{{ postgresql_version }}/data"
+
+postgresql_pg_hba_entries:
+  - {type: "host", database: "all", user: "all", cidr_address: "127.0.0.1/32", auth_method: "md5", comment: "Allow connection from Virtual box bridge "}
+  - {type: "host", database: "all", user: "all", cidr_address: "127.0.0.1/32", auth_method: "ident", comment: "IPv4 local connections:"}
+  - {type: "host", database: "all", user: "all", cidr_address: "::1/128", auth_method: "ident", comment: "IPv6 local connections:"}
+  - {type: "local", database: "all", user: "all", cidr_address: "", auth_method: "ident", comment: "'local' is for Unix domain socket connections only"}
+  - {type: "host", database: "all", user: "all", cidr_address: "192.168.0.0/16", auth_method: "md5", comment: "Allow all private networks "}
+  - {type: "host", database: "all", user: "all", cidr_address: "172.16.0.0/12", auth_method: "md5", comment: "Allow all private networks "}
+  - {type: "host", database: "all", user: "all", cidr_address: "10.0.0.0/8", auth_method: "md5", comment: "Allow all private networks "}
+
+postgresql_config_shared_buffers: 1GB
+postgresql_config_temp_buffers: 64MB
+postgresql_config_work_mem: 8MB
+postgresql_config_maintenance_work_mem: 64MB
+postgresql_config_synchronous_commit: on
+postgresql_config_wal_buffers: 16MB
+postgresql_config_checkpoint_segments: 32
+postgresql_config_checkpoint_timeout: 15min
+postgresql_config_autovacuum_max_workers: 10
+postgresql_config_autovacuum_analyze_scale_factor: 0.02
+postgresql_config_autovacuum_vacuum_scale_factor: 0.005
+postgresql_config_autovacuum_work_mem: 64MB
+postgresql_config_effective_cache_size: 4GB
+postgresql_config_random_page_cost: 4
+postgresql_config_max_connections: 200
+postgresql_config_log_disconnections: on
+postgresql_config_hot_standby: on
+postgresql_config_bgwriter_delay: 100
+postgresql_config_bgwriter_lru_maxpages: 1000
+postgresql_config_bgwriter_lru_multiplier: 5
+postgresql_config_archive_command: ""
+
+postgresql_config_wal_level: 'hot_standby'
+postgresql_config_max_wal_senders: 5
+postgresql_config_wal_keep_segments: 128
+
+postgresql_firewalld_services_enabled:
+  - "postgresql"

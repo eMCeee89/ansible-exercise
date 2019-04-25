@@ -1,0 +1,11 @@
+---
+
+nginx_package_name: "nginx"
+nginx_version: ""
+nginx_config_root: "/etc/nginx"
+nginx_vhost_domain: "direct.local"
+nginx_vhosts: {}
+nginx_service_name: "{{ nginx_package_name }}"
+nginx_start_service: False
+nginx_firewalld_services_enabled:
+  - "http"

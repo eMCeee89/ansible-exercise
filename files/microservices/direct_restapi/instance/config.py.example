@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+
+DIRECT_EXAM_DB_USER = 'direct'
+DIRECT_EXAM_DB_NAME = 'direct'
+DIRECT_EXAM_DB_PASSWORD = 'direct'
+DIRECT_EXAM_DB_HOST = 'localhost'
+DIRECT_EXAM_DB_PORT = 5432
+DIRECT_EXAM_APP_INTERFACE = "0.0.0.0"
+DIRECT_EXAM_APP_PORT = 5000

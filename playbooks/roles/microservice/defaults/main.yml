@@ -1,0 +1,19 @@
+---
+
+microservice_os_user: "direct"
+microservice_os_group: "direct"
+
+microservice_bin_req_filenames:
+  bin:
+    name: "application.py"
+  requirements:
+    name: "requirements.txt"
+
+microservice_app_db_name: ""
+microservice_app_db_user: ""
+microservice_app_db_password: "use-vault"
+microservice_app_root_folder: "/srv"
+
+microservice_packages:
+  - "python34"
+  - "python34-pip"

@@ -1,0 +1,30 @@
+---
+
+- name: import OS-specific variables
+  include_vars: "{{ ansible_distribution }}.yml"
+
+- name: add postgresql repository
+  package:
+    name: "{{ postgresql_repo[postgresql_version] }}"
+    state: present
+
+- name: ensure postgresql packages are installed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ postgresql_packages }}"
+
+- name: ensure postgresql development packages are installed
+  package:
+    name: "{{ item }}"
+  with_items:
+    - "{{ postgresql_devel_packages }}"
+  when: postgresql_devel is defined and postgresql_devel | bool
+
+- name: "add /usr/pgsql-{{ postgresql_version }}/bin/ to path"
+  template:
+    src: profile_pgsql.sh.j2
+    dest: /etc/profile.d/pgsql.sh
+    owner: root
+    group: root
+    mode: 0755

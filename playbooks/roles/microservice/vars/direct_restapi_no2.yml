@@ -1,0 +1,21 @@
+---
+
+microservice_app_src: "direct_restapi"
+microservice_app_name: "direct_restapi_no2"
+microservice_app_db_create: True
+microservice_app_db_user: "direct-app-user"
+microservice_app_db_name: "python-restapi-db"
+microservice_app_db_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34653130393962653065393333323166613162353463613865646165613363373638313362653564
+          3261616264393836613033376531363763386266313332320a303037633165316335333765366530
+          63363138313531313438626436643438323930373562613234396562373338656237663461353932
+          3931336562663930650a343137313731313062616564306631633666356139613232386136396435
+          6635
+microservice_app_db_host: "10.11.12.13"
+microservice_app_db_port: 5432
+microservice_app_interface: "127.0.0.1"
+microservice_app_port: 5002
+microservice_app_protocol: "tcp"
+microservice_enable_service: True
+microservice_app_port_firewalld_open: False

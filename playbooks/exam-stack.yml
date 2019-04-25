@@ -1,0 +1,33 @@
+---
+
+# direct-exam playbook
+
+- name: base provisioning of all instances
+  hosts: all
+  become: True
+  roles:
+    - "base"
+
+- name: provison DB instance
+  hosts: db-servers
+  become: True
+  roles:
+    - "postgresql/base"
+
+- name: provison microservice instance
+  hosts: microservice-servers
+  become: True
+  roles:
+    - "microservice"
+
+- name: provison HAproxy instance
+  hosts: haproxy-servers
+  become: True
+  roles:
+    - "haproxy"
+
+- name: provison nginx instance
+  hosts: nginx-servers
+  become: True
+  roles:
+    - "nginx"

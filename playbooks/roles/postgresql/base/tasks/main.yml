@@ -1,0 +1,9 @@
+---
+
+- include_tasks: "install.yml"
+
+- include: "initialize.yml"
+
+- include: "configure.yml"
+
+- include: "run.yml"

@@ -1,0 +1,40 @@
+---
+
+- package:
+    name: "{{ nginx_package_name }}{% if nginx_version %}-{{ nginx_version }}{% endif %}"
+    state: present
+
+- name: deploy nginx server configuration file
+  template:
+    src: "nginx.conf.j2"
+    dest: "{{ nginx_config_root }}/nginx.conf"
+  notify: restart nginx
+
+- name: deploy nginx vhost configuration files
+  template:
+    src: "vhost.conf.j2"
+    dest: "{{ nginx_config_root }}/conf.d/{{ item.key }}.conf"
+    mode: 0644
+  notify: reload nginx
+  with_dict: "{{ nginx_vhosts }}"
+  when: nginx_vhosts
+
+- name: enable nginx service
+  service:
+    name: "{{ nginx_service_name }}"
+    enabled: yes
+
+- name: start nginx service
+  service:
+    name: "{{ nginx_service_name }}"
+    state: started
+  when: nginx_start_service
+
+- name: allow required services on firewalld
+  firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: True
+    immediate: True
+  with_items:
+    - "{{ nginx_firewalld_services_enabled }}"

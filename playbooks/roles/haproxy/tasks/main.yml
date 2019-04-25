@@ -1,0 +1,43 @@
+---
+
+- package:
+    name: "{{ haproxy_package_name }}{% if haproxy_version %}-{{ haproxy_version }}{% endif %}"
+    state: present
+
+- name: deploy haproxy configuration
+  template:
+    src: "haproxy.cfg.j2"
+    dest: "{{ haproxy_config_file_path }}"
+    mode: 0644
+  notify: restart haproxy
+
+- name: selinux - adjust context of haproxy ports
+  seport:
+    ports: "{{ item }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  with_items:
+    - "{{ haproxy_frontend_port }}"
+    - "{{ haproxy_stats_port }}"
+
+- name: allow haproxy ports on firewalld
+  firewalld:
+    port: "{{ item.port }}/{{ item.protocol }}"
+    state: enabled
+    permanent: True
+    immediate: True
+  with_items:
+    - "{{ haproxy_ports_firewalld_open }}"
+  when: haproxy_ports_firewalld_open
+
+- name: enable haproxy service
+  service:
+    name: "{{ haproxy_service_name }}"
+    enabled: yes
+
+- name: start haproxy service
+  service:
+    name: "{{ haproxy_service_name }}"
+    state: started
+  when: haproxy_start_service

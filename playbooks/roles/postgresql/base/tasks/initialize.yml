@@ -1,0 +1,8 @@
+---
+
+- name: initialize database
+  command: "{{ postgresql_bin_dir }}/initdb -A ident -E UTF8 --lc-collate en_US.UTF-8 --lc-ctype en_US.UTF-8 -k -D {{ pg_data_dir }}"
+  args:
+    creates: "{{ pg_data_dir }}/PG_VERSION"
+  become: true
+  become_user: "{{ postgresql_user_name }}"
